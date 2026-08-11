@@ -1,0 +1,28 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Secrets - never commit these
+*.auto.tfvars
+secrets.tfvars
+.env
+.env.*
+
+# Node / Docker
+node_modules/
+dist/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
