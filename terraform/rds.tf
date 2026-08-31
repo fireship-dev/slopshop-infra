@@ -34,6 +34,7 @@ resource "aws_db_instance" "main" {
   final_snapshot_identifier = var.environment == "prod" ? "${local.name_prefix}-db-final" : null
 
   performance_insights_enabled = true
+  deletion_protection          = var.db_deletion_protection
 }
 
 # Connection string for the app, stored as a SecureString and injected into the task as a secret.
