@@ -36,3 +36,21 @@ resource "aws_db_instance" "this" {
   performance_insights_enabled = true
   deletion_protection          = var.deletion_protection
 }
+
+# Optional read replica. Automated backups must be enabled on the primary for this to work,
+# which they are as long as backup_retention_period > 0.
+resource "aws_db_instance" "replica" {
+  count = var.create_read_replica ? 1 : 0
+
+  identifier          = "${var.name_prefix}-db-replica"
+  replicate_source_db = aws_db_instance.this.identifier
+  instance_class      = coalesce(var.replica_instance_class, var.instance_class)
+
+  vpc_security_group_ids = var.security_group_ids
+  publicly_accessible    = false
+  storage_encrypted      = true
+
+  skip_final_snapshot          = true
+  performance_insights_enabled = true
+  deletion_protection          = var.deletion_protection
+}

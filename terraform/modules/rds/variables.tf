@@ -68,3 +68,15 @@ variable "backup_retention_period" {
   type        = number
   default     = 7
 }
+
+variable "create_read_replica" {
+  description = "Create a read replica of the primary instance"
+  type        = bool
+  default     = false
+}
+
+variable "replica_instance_class" {
+  description = "Instance class for the read replica. Defaults to the primary's class."
+  type        = string
+  default     = null
+}

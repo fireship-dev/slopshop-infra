@@ -27,3 +27,8 @@ output "vpc_id" {
   description = "ID of the VPC"
   value       = aws_vpc.main.id
 }
+
+output "db_replica_address" {
+  description = "Hostname of the read replica, null if none"
+  value       = module.rds.replica_address
+}

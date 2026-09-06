@@ -97,3 +97,9 @@ variable "db_deletion_protection" {
   type        = bool
   default     = false
 }
+
+variable "db_create_read_replica" {
+  description = "Whether to create a read replica for the database"
+  type        = bool
+  default     = false
+}
