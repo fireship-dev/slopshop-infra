@@ -28,3 +28,24 @@ resource "aws_s3_bucket_public_access_block" "assets" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+# Non-prod buckets accumulate old versions from every test upload. Expire them so the
+# staging bucket does not quietly grow forever.
+resource "aws_s3_bucket_lifecycle_configuration" "assets" {
+  count = local.is_nonprod ? 1 : 0
+
+  bucket = aws_s3_bucket.assets.id
+
+  rule {
+    id     = "expire-noncurrent-versions"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+
+  depends_on = [aws_s3_bucket_versioning.assets]
+}
