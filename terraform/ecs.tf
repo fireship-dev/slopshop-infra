@@ -26,8 +26,8 @@ resource "aws_ecs_task_definition" "app" {
       name      = "app"
       image     = var.container_image
       essential = true
-      cpu       = 256
-      memory    = 512
+      cpu       = 512
+      memory    = 1024
 
       portMappings = [
         {
