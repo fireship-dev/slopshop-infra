@@ -17,7 +17,8 @@ and an S3 bucket for static assets.
 │   ├── vpc.tf              # VPC, subnets, NAT, routing
 │   ├── security_groups.tf  # ALB / ECS / RDS security groups
 │   ├── ecs.tf              # cluster, task definition, service, ALB
-│   ├── rds.tf              # Postgres instance + DATABASE_URL parameter
+│   ├── rds.tf              # Postgres via modules/rds + DATABASE_URL parameter
+│   ├── modules/rds/        # reusable RDS Postgres module
 │   ├── s3.tf               # static assets bucket
 │   ├── iam.tf              # task execution and task roles
 │   ├── variables.tf

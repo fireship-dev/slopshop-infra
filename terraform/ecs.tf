@@ -41,7 +41,7 @@ resource "aws_ecs_task_definition" "app" {
         { name = "NODE_ENV", value = "production" },
         { name = "PORT", value = tostring(var.container_port) },
         { name = "ASSETS_BUCKET", value = aws_s3_bucket.assets.bucket },
-        { name = "DATABASE_HOST", value = aws_db_instance.main.address },
+        { name = "DATABASE_HOST", value = module.rds.address },
         { name = "DATABASE_NAME", value = var.db_name },
       ]
 
