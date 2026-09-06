@@ -27,3 +27,8 @@ output "vpc_id" {
   description = "ID of the VPC"
   value       = aws_vpc.main.id
 }
+
+output "deploy_role_arn" {
+  description = "ARN of the role assumed by the deploy pipeline"
+  value       = aws_iam_role.deploy.arn
+}

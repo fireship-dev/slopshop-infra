@@ -60,3 +60,55 @@ resource "aws_iam_role_policy" "ecs_task_assets" {
   role   = aws_iam_role.ecs_task.id
   policy = data.aws_iam_policy_document.ecs_task_assets.json
 }
+
+# ---- Deploy pipeline ----
+# Assumed by GitHub Actions via OIDC so the workflow can push images and roll the ECS service.
+
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+}
+
+data "aws_iam_policy_document" "deploy_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:fireship-dev/slopshop:*", "repo:fireship-dev/slopshop-infra:*"]
+    }
+  }
+}
+
+resource "aws_iam_role" "deploy" {
+  name               = "${local.name_prefix}-deploy"
+  assume_role_policy = data.aws_iam_policy_document.deploy_assume.json
+}
+
+# TODO: scope this down once we know the full set of actions the pipeline needs.
+data "aws_iam_policy_document" "deploy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["*"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "deploy" {
+  name   = "${local.name_prefix}-deploy"
+  role   = aws_iam_role.deploy.id
+  policy = data.aws_iam_policy_document.deploy.json
+}
