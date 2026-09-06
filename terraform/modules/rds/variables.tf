@@ -68,3 +68,15 @@ variable "backup_retention_period" {
   type        = number
   default     = 7
 }
+
+variable "backup_window" {
+  description = "Daily UTC window for automated backups, e.g. 03:00-04:00"
+  type        = string
+  default     = "03:00-04:00"
+}
+
+variable "maintenance_window" {
+  description = "Weekly UTC window for maintenance, e.g. sun:04:30-sun:05:30. Must not overlap backup_window."
+  type        = string
+  default     = "sun:04:30-sun:05:30"
+}

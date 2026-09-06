@@ -14,6 +14,10 @@ module "rds" {
   multi_az            = var.db_multi_az
   deletion_protection = var.db_deletion_protection
   skip_final_snapshot = var.environment != "prod"
+
+  backup_retention_period = var.db_backup_retention_period
+  backup_window           = var.db_backup_window
+  maintenance_window      = var.db_maintenance_window
 }
 
 # Connection string for the app, stored as a SecureString and injected into the task as a secret.
