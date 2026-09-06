@@ -97,3 +97,21 @@ variable "db_deletion_protection" {
   type        = bool
   default     = false
 }
+
+variable "db_backup_retention_period" {
+  description = "Days to keep automated database backups"
+  type        = number
+  default     = 7
+}
+
+variable "db_backup_window" {
+  description = "Daily UTC window for automated database backups"
+  type        = string
+  default     = "03:00-04:00"
+}
+
+variable "db_maintenance_window" {
+  description = "Weekly UTC window for database maintenance"
+  type        = string
+  default     = "sun:04:30-sun:05:30"
+}
