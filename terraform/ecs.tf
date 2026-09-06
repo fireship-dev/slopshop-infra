@@ -42,6 +42,7 @@ resource "aws_ecs_task_definition" "app" {
         { name = "PORT", value = tostring(var.container_port) },
         { name = "ASSETS_BUCKET", value = aws_s3_bucket.assets.bucket },
         { name = "DATABASE_HOST", value = module.rds.address },
+        { name = "DATABASE_READ_HOST", value = coalesce(module.rds.replica_address, module.rds.address) },
         { name = "DATABASE_NAME", value = var.db_name },
       ]
 

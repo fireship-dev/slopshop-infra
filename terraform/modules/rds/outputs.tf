@@ -17,3 +17,8 @@ output "instance_id" {
   description = "Identifier of the primary instance"
   value       = aws_db_instance.this.id
 }
+
+output "replica_address" {
+  description = "Hostname of the read replica, null if none"
+  value       = var.create_read_replica ? aws_db_instance.replica[0].address : null
+}
