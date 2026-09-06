@@ -28,10 +28,10 @@ and an S3 bucket for static assets.
 
 ## Environments
 
-| Environment | tfvars                             | Notes                                  |
-| ----------- | ---------------------------------- | -------------------------------------- |
-| dev         | `terraform/environments/dev.tfvars`  | single NAT, t4g.micro db, 1 task       |
-| prod        | `terraform/environments/prod.tfvars` | multi-AZ db, deletion protection on    |
+| Environment | tfvars                               | Notes                               |
+| ----------- | ------------------------------------ | ----------------------------------- |
+| dev         | `terraform/environments/dev.tfvars`  | single NAT, t4g.micro db, 1 task    |
+| prod        | `terraform/environments/prod.tfvars` | multi-AZ db, deletion protection on |
 
 Each environment lives in its own Terraform workspace so state is kept separate:
 
@@ -65,12 +65,12 @@ docker compose up --build
 ```
 
 This brings up the app on <http://localhost:3000> and a Postgres 16 instance on `localhost:5432`
-(user/password/db are all `slopshop`, and only for local use).
+(user, password and database are all `slopshop`; local use only).
 
 ## CI
 
 Every pull request that touches `terraform/` runs `terraform fmt -check` and `terraform validate`.
-Run `terraform fmt -recursive` before pushing or the check will fail.
+Run `terraform fmt -recursive` before pushing, otherwise the check will fail.
 
 ## Conventions
 
