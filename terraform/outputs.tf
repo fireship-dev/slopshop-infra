@@ -15,7 +15,7 @@ output "ecs_service_name" {
 
 output "db_endpoint" {
   description = "RDS endpoint (host:port)"
-  value       = aws_db_instance.main.endpoint
+  value       = module.rds.endpoint
 }
 
 output "assets_bucket_name" {
