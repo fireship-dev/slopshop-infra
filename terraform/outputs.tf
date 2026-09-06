@@ -27,3 +27,8 @@ output "vpc_id" {
   description = "ID of the VPC"
   value       = aws_vpc.main.id
 }
+
+output "assets_cdn_domain" {
+  description = "CloudFront domain for static assets"
+  value       = aws_cloudfront_distribution.assets.domain_name
+}
