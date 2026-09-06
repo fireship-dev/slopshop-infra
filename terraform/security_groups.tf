@@ -26,9 +26,9 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "${local.name_prefix}-alb-sg"
-  }
+  })
 }
 
 resource "aws_security_group" "ecs" {
@@ -51,9 +51,9 @@ resource "aws_security_group" "ecs" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "${local.name_prefix}-ecs-sg"
-  }
+  })
 }
 
 resource "aws_security_group" "rds" {
@@ -76,7 +76,7 @@ resource "aws_security_group" "rds" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "${local.name_prefix}-rds-sg"
-  }
+  })
 }

@@ -5,11 +5,15 @@ resource "aws_ecs_cluster" "main" {
     name  = "containerInsights"
     value = "enabled"
   }
+
+  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_log_group" "app" {
   name              = "/ecs/${local.name_prefix}/app"
   retention_in_days = 30
+
+  tags = local.common_tags
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -99,6 +103,8 @@ resource "aws_lb" "app" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = aws_subnet.public[*].id
+
+  tags = local.common_tags
 }
 
 resource "aws_lb_target_group" "app" {
@@ -116,6 +122,8 @@ resource "aws_lb_target_group" "app" {
     unhealthy_threshold = 3
     matcher             = "200"
   }
+
+  tags = local.common_tags
 }
 
 resource "aws_lb_listener" "http" {

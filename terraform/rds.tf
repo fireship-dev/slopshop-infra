@@ -2,9 +2,9 @@ resource "aws_db_subnet_group" "main" {
   name       = "${local.name_prefix}-db"
   subnet_ids = aws_subnet.private[*].id
 
-  tags = {
+  tags = merge(local.common_tags, {
     Name = "${local.name_prefix}-db-subnet-group"
-  }
+  })
 }
 
 resource "aws_db_instance" "main" {
@@ -35,6 +35,8 @@ resource "aws_db_instance" "main" {
 
   performance_insights_enabled = true
   deletion_protection          = var.db_deletion_protection
+
+  tags = local.common_tags
 }
 
 # Connection string for the app, stored as a SecureString and injected into the task as a secret.
