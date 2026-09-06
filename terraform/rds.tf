@@ -29,9 +29,9 @@ resource "aws_db_instance" "main" {
   publicly_accessible    = false
   multi_az               = var.db_multi_az
 
-  backup_retention_period   = 7
-  skip_final_snapshot       = var.environment != "prod"
-  final_snapshot_identifier = var.environment == "prod" ? "${local.name_prefix}-db-final" : null
+  backup_retention_period   = local.is_prod ? 30 : 7
+  skip_final_snapshot       = var.environment == "dev"
+  final_snapshot_identifier = var.environment == "dev" ? null : "${local.name_prefix}-db-final"
 
   performance_insights_enabled = true
   deletion_protection          = var.db_deletion_protection

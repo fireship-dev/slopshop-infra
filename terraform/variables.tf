@@ -5,8 +5,13 @@ variable "project" {
 }
 
 variable "environment" {
-  description = "Deployment environment (dev, prod)"
+  description = "Deployment environment (dev, staging, prod)"
   type        = string
+
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "environment must be one of: dev, staging, prod."
+  }
 }
 
 variable "aws_region" {
@@ -94,6 +99,36 @@ variable "db_multi_az" {
 
 variable "db_deletion_protection" {
   description = "Whether to enable deletion protection on the database"
+  type        = bool
+  default     = false
+}
+
+variable "min_capacity" {
+  description = "Minimum number of ECS tasks for autoscaling"
+  type        = number
+  default     = 1
+}
+
+variable "max_capacity" {
+  description = "Maximum number of ECS tasks for autoscaling"
+  type        = number
+  default     = 2
+}
+
+variable "log_retention_days" {
+  description = "CloudWatch log retention for the app log group"
+  type        = number
+  default     = 30
+}
+
+variable "nat_gateway_per_az" {
+  description = "Create one NAT gateway per AZ (true) or a single shared one (false)"
+  type        = bool
+  default     = false
+}
+
+variable "alb_deletion_protection" {
+  description = "Enable deletion protection on the load balancer"
   type        = bool
   default     = false
 }

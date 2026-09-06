@@ -9,7 +9,7 @@ resource "aws_ecs_cluster" "main" {
 
 resource "aws_cloudwatch_log_group" "app" {
   name              = "/ecs/${local.name_prefix}/app"
-  retention_in_days = 30
+  retention_in_days = var.log_retention_days
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -39,6 +39,7 @@ resource "aws_ecs_task_definition" "app" {
 
       environment = [
         { name = "NODE_ENV", value = "production" },
+        { name = "SLOPSHOP_ENV", value = var.environment },
         { name = "PORT", value = tostring(var.container_port) },
         { name = "ASSETS_BUCKET", value = aws_s3_bucket.assets.bucket },
         { name = "DATABASE_HOST", value = aws_db_instance.main.address },
@@ -99,6 +100,8 @@ resource "aws_lb" "app" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = aws_subnet.public[*].id
+
+  enable_deletion_protection = var.alb_deletion_protection
 }
 
 resource "aws_lb_target_group" "app" {
@@ -126,5 +129,38 @@ resource "aws_lb_listener" "http" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app.arn
+  }
+}
+
+# ---- Autoscaling ----
+# Only enabled where min != max. dev pins desired_count and skips the scaling policy entirely.
+
+resource "aws_appautoscaling_target" "app" {
+  count = var.max_capacity > var.min_capacity ? 1 : 0
+
+  service_namespace  = "ecs"
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.app.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  min_capacity       = var.min_capacity
+  max_capacity       = var.max_capacity
+}
+
+resource "aws_appautoscaling_policy" "app_cpu" {
+  count = var.max_capacity > var.min_capacity ? 1 : 0
+
+  name               = "${local.name_prefix}-app-cpu"
+  policy_type        = "TargetTrackingScaling"
+  service_namespace  = aws_appautoscaling_target.app[0].service_namespace
+  resource_id        = aws_appautoscaling_target.app[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.app[0].scalable_dimension
+
+  target_tracking_scaling_policy_configuration {
+    target_value       = 60
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
   }
 }

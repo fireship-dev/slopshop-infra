@@ -1,6 +1,6 @@
 resource "aws_security_group" "alb" {
   name        = "${local.name_prefix}-alb"
-  description = "Load balancer: public HTTP/HTTPS"
+  description = "${var.environment} load balancer: public HTTP/HTTPS"
   vpc_id      = aws_vpc.main.id
 
   ingress {

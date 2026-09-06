@@ -44,22 +44,27 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_eip" "nat" {
+  count = local.nat_gateway_count
+
   domain = "vpc"
 
   tags = {
-    Name = "${local.name_prefix}-nat-eip"
+    Name = "${local.name_prefix}-nat-eip-${count.index}"
   }
 
   depends_on = [aws_internet_gateway.main]
 }
 
-# Single NAT gateway to keep dev costs down. Prod should probably get one per AZ.
+# dev: a single NAT gateway to keep costs down. staging/prod: one per AZ so an AZ outage
+# does not take out egress for the whole service.
 resource "aws_nat_gateway" "main" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public[0].id
+  count = local.nat_gateway_count
+
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
 
   tags = {
-    Name = "${local.name_prefix}-nat"
+    Name = "${local.name_prefix}-nat-${count.index}"
   }
 
   depends_on = [aws_internet_gateway.main]
@@ -79,15 +84,17 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table" "private" {
+  count = local.nat_gateway_count
+
   vpc_id = aws_vpc.main.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.main.id
+    nat_gateway_id = aws_nat_gateway.main[count.index].id
   }
 
   tags = {
-    Name = "${local.name_prefix}-private-rt"
+    Name = "${local.name_prefix}-private-rt-${count.index}"
   }
 }
 
@@ -102,5 +109,5 @@ resource "aws_route_table_association" "private" {
   count = var.az_count
 
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
+  route_table_id = aws_route_table.private[min(count.index, local.nat_gateway_count - 1)].id
 }

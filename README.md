@@ -31,14 +31,19 @@ and an S3 bucket for static assets.
 | Environment | tfvars                             | Notes                                  |
 | ----------- | ---------------------------------- | -------------------------------------- |
 | dev         | `terraform/environments/dev.tfvars`  | single NAT, t4g.micro db, 1 task       |
+| staging     | `terraform/environments/staging.tfvars` | prod-shaped: NAT per AZ, autoscaling 1-4 |
 | prod        | `terraform/environments/prod.tfvars` | multi-AZ db, deletion protection on    |
 
 Each environment lives in its own Terraform workspace so state is kept separate:
 
 ```sh
 cd terraform
-terraform workspace select dev || terraform workspace new dev
+terraform workspace select staging || terraform workspace new staging
+terraform plan -var-file=environments/staging.tfvars
 ```
+
+Staging is meant to look like prod (per-AZ NAT, autoscaling, final snapshots) at a fraction of
+the size, so a deploy that works there should work in prod. Dev stays as cheap as possible.
 
 ## Deploying
 
