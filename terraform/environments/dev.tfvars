@@ -2,6 +2,7 @@ environment = "dev"
 aws_region  = "us-east-1"
 vpc_cidr    = "10.10.0.0/16"
 az_count    = 2
+office_cidr = "203.0.113.0/24"
 
 container_image  = "ghcr.io/fireship-dev/slopshop:dev"
 container_cpu    = 256

@@ -97,3 +97,9 @@ variable "db_deletion_protection" {
   type        = bool
   default     = false
 }
+
+variable "office_cidr" {
+  description = "Office egress range, allowed to reach the database directly for debugging"
+  type        = string
+  default     = "203.0.113.0/24"
+}
