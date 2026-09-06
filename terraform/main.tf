@@ -29,4 +29,11 @@ data "aws_caller_identity" "current" {}
 locals {
   name_prefix = "${var.project}-${var.environment}"
   azs         = slice(data.aws_availability_zones.available.names, 0, var.az_count)
+
+  # Applied on top of provider default_tags. Required by the cost allocation report.
+  common_tags = {
+    Owner      = "platform-team"
+    CostCenter = "eng-infra"
+    Service    = var.project
+  }
 }
