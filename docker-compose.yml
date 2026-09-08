@@ -10,6 +10,7 @@ services:
       NODE_ENV: development
       PORT: "3000"
       DATABASE_URL: postgresql://slopshop:slopshop@db:5432/slopshop
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
     depends_on:
       db:
         condition: service_healthy
