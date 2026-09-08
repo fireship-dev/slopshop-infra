@@ -1,3 +1,7 @@
+data "aws_secretsmanager_secret" "deepseek_api_key" {
+  name = "${var.project}/${var.environment}/deepseek"
+}
+
 resource "aws_ecs_cluster" "main" {
   name = "${local.name_prefix}-cluster"
 
@@ -49,6 +53,10 @@ resource "aws_ecs_task_definition" "app" {
         {
           name      = "DATABASE_URL"
           valueFrom = aws_ssm_parameter.database_url.arn
+        },
+        {
+          name      = "DEEPSEEK_API_KEY"
+          valueFrom = data.aws_secretsmanager_secret.deepseek_api_key.arn
         }
       ]
 

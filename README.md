@@ -42,10 +42,18 @@ terraform workspace select dev || terraform workspace new dev
 
 ## Deploying
 
-Secrets are never committed. The database password is a `sensitive` variable with no default, so
-export it before planning:
+Secrets are never committed. Before the first plan for an environment, create the DeepSeek API key
+in AWS Secrets Manager as a plaintext secret named `slopshop/<environment>/deepseek`. Terraform
+references that secret by name and ECS injects it into the app as `DEEPSEEK_API_KEY`, without copying
+the value into Terraform state. Use the default Secrets Manager encryption key.
+
+The database password remains a `sensitive` variable with no default, so export it before planning:
 
 ```sh
+aws secretsmanager create-secret \
+  --name slopshop/dev/deepseek \
+  --secret-string "$DEEPSEEK_API_KEY"
+
 export TF_VAR_db_password="$(aws secretsmanager get-secret-value --secret-id slopshop/dev/db --query SecretString --output text)"
 
 cd terraform
@@ -65,7 +73,8 @@ docker compose up --build
 ```
 
 This brings up the app on <http://localhost:3000> and a Postgres 16 instance on `localhost:5432`
-(user/password/db are all `slopshop`, and only for local use).
+(user/password/db are all `slopshop`, and only for local use). Export `DEEPSEEK_API_KEY` before
+starting Compose when testing DeepSeek locally.
 
 ## CI
 

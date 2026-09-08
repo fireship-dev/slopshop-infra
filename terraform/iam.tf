@@ -25,6 +25,11 @@ data "aws_iam_policy_document" "ecs_task_execution_secrets" {
     actions   = ["ssm:GetParameters"]
     resources = [aws_ssm_parameter.database_url.arn]
   }
+
+  statement {
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [data.aws_secretsmanager_secret.deepseek_api_key.arn]
+  }
 }
 
 resource "aws_iam_role_policy" "ecs_task_execution_secrets" {
