@@ -50,9 +50,23 @@ the value into Terraform state. Use the default Secrets Manager encryption key.
 The database password remains a `sensitive` variable with no default, so export it before planning:
 
 ```sh
+PROJECT=slopshop
+ENVIRONMENT=dev
+AWS_REGION=us-east-1
+
+: "${DEEPSEEK_API_KEY:?Export DEEPSEEK_API_KEY before creating the secret}"
+secret_file="$(mktemp)"
+trap 'rm -f "$secret_file"' EXIT
+chmod 600 "$secret_file"
+printf '%s' "$DEEPSEEK_API_KEY" > "$secret_file"
+
 aws secretsmanager create-secret \
-  --name slopshop/dev/deepseek \
-  --secret-string "$DEEPSEEK_API_KEY"
+  --name "$PROJECT/$ENVIRONMENT/deepseek" \
+  --region "$AWS_REGION" \
+  --secret-string "file://$secret_file"
+
+rm -f "$secret_file"
+trap - EXIT
 
 export TF_VAR_db_password="$(aws secretsmanager get-secret-value --secret-id slopshop/dev/db --query SecretString --output text)"
 
